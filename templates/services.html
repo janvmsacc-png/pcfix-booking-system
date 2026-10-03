@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Services{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h1>Services</h1>
+      <p class="lead">Professional computer care tailored to what your machine actually needs.</p>
+    </div>
+
+    {% for key, s in services.items() %}
+    <div class="card fade-in mb-3" style="max-width: 800px; margin-left: auto; margin-right: auto; animation-delay: {{ loop.index0 * 0.08 }}s">
+      <div style="display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap;">
+        <div class="card-icon" style="flex-shrink: 0;">{{ s.name[0] }}</div>
+        <div style="flex: 1;">
+          <h3>{{ s.name }}</h3>
+          <p>{{ s.description }}</p>
+          <div class="card-price">₱{{ "{:,}".format(s.price) }} <span>· {{ s.duration }}</span></div>
+          <ul class="feature-list">
+            {% for f in s.features %}
+            <li>{{ f }}</li>
+            {% endfor %}
+          </ul>
+          <a href="{{ url_for('book') }}?service={{ key }}" class="btn btn-primary btn-sm">Book this service</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

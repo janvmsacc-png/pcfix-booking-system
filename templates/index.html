@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="fade-in">
+      <div class="hero-badge">Trusted local computer experts</div>
+      <h1>Computer care,<br>done right.</h1>
+      <p class="lead">
+        From stubborn freezes to hardware repairs, PCfix delivers fast,
+        transparent troubleshooting, maintenance, and repair — booked in minutes.
+      </p>
+      <div class="hero-actions">
+        <a href="{{ url_for('book') }}" class="btn btn-primary">Book a Repair</a>
+        <a href="{{ url_for('services') }}" class="btn btn-secondary">View Services</a>
+      </div>
+    </div>
+    <div class="hero-visual fade-in" style="animation-delay: 0.15s">
+      <div class="hero-card">
+        <div class="hero-card-header">
+          <div class="hero-card-icon">PC</div>
+          <div>
+            <strong>Service Snapshot</strong>
+            <div class="text-muted" style="font-size: 0.85rem;">Most booked this week</div>
+          </div>
+        </div>
+        <div class="hero-stat">
+          <span>Troubleshooting</span>
+          <span>from ₱999</span>
+        </div>
+        <div class="hero-stat">
+          <span>Full Maintenance</span>
+          <span>from ₱1,999</span>
+        </div>
+        <div class="hero-stat">
+          <span>Hardware Repair</span>
+          <span>from ₱2,999</span>
+        </div>
+        <a href="{{ url_for('book') }}" class="btn btn-primary btn-block mt-3">Reserve a Slot</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2>What we fix</h2>
+      <p class="lead">Clear packages, honest pricing, no surprises.</p>
+    </div>
+    <div class="card-grid">
+      {% for key, s in services.items() %}
+      <div class="card fade-in" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+        <div class="card-icon">{{ s.name[0] }}</div>
+        <h3>{{ s.name }}</h3>
+        <p>{{ s.description }}</p>
+        <div class="card-price">₱{{ "{:,}".format(s.price) }} <span>starting</span></div>
+        <ul class="feature-list">
+          {% for f in s.features %}
+          <li>{{ f }}</li>
+          {% endfor %}
+        </ul>
+        <a href="{{ url_for('book') }}?service={{ key }}" class="btn btn-outline btn-block">Select</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2>How it works</h2>
+      <p class="lead">Three simple steps from problem to solution.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card fade-in">
+        <div class="card-icon">1</div>
+        <h3>Book online</h3>
+        <p>Choose a service, pick a date and time that works for you, and submit your details in under two minutes.</p>
+      </div>
+      <div class="card fade-in" style="animation-delay: 0.1s">
+        <div class="card-icon">2</div>
+        <h3>Confirm &amp; secure</h3>
+        <p>Receive an email with a secure link to add machine details and complete a small downpayment.</p>
+      </div>
+      <div class="card fade-in" style="animation-delay: 0.2s">
+        <div class="card-icon">3</div>
+        <h3>We take care of it</h3>
+        <p>Drop off or arrange pickup. Our technicians diagnose, repair, and return your device ready to go.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container text-center fade-in">
+    <h2>Ready when you are</h2>
+    <p class="lead" style="margin: 12px auto 28px;">
+      Online booking is free. No account required to reserve a slot.
+    </p>
+    <a href="{{ url_for('book') }}" class="btn btn-primary">Book a Repair Now</a>
+  </div>
+</section>
+{% endblock %}

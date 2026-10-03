@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card fade-in">
+    {% if step == "otp" %}
+      <h1>Enter verification code</h1>
+      <p class="lead">We sent a 6-digit code to the email linked to <strong>{{ username }}</strong>.</p>
+      <form method="POST" action="{{ url_for('login') }}">
+        <input type="hidden" name="step" value="otp">
+        <div class="form-group">
+          <label for="code">Verification code</label>
+          <input type="text" id="code" name="code" class="form-control" required
+                 placeholder="000000" maxlength="6" pattern="[0-9]{6}"
+                 autocomplete="one-time-code" inputmode="numeric"
+                 style="letter-spacing: 0.3em; font-size: 1.25rem; text-align: center;">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Verify &amp; Sign In</button>
+      </form>
+      <p class="text-muted text-center mt-3" style="font-size: 0.85rem;">
+        <a href="{{ url_for('login') }}">Use a different username</a>
+      </p>
+    {% else %}
+      <h1>Sign in</h1>
+      <p class="lead">Enter your username. We'll email you a one-time code — no password needed.</p>
+      <form method="POST" action="{{ url_for('login') }}">
+        <input type="hidden" name="step" value="username">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" class="form-control" required
+                 placeholder="yourusername" minlength="3" autocomplete="username">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Send Login Code</button>
+      </form>
+      <p class="text-muted text-center mt-3" style="font-size: 0.9rem;">
+        No account? <a href="{{ url_for('register') }}">Create one</a>
+      </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

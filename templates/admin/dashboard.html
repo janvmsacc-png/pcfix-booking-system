@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <h1 style="font-size: 1.75rem;">Dashboard</h1>
+        <p class="text-muted">Manage bookings and payments</p>
+      </div>
+      <a href="{{ url_for('admin_logout') }}" class="btn btn-secondary btn-sm">Logout</a>
+    </div>
+
+    <div class="admin-stats fade-in">
+      <div class="stat-card">
+        <div class="stat-value">{{ active_count }}</div>
+        <div class="stat-label">Active bookings</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ pending_pay_count }}</div>
+        <div class="stat-label">Pending downpayments</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ bookings|length }}</div>
+        <div class="stat-label">Total records</div>
+      </div>
+    </div>
+
+    <div class="table-wrap fade-in">
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Service</th>
+            <th>Slot</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if bookings %}
+            {% for b in bookings %}
+            <tr>
+              <td>
+                <strong>{{ b.name }}</strong><br>
+                <span class="text-muted" style="font-size: 0.8rem;">{{ b.email }}</span>
+              </td>
+              <td>{{ services.get(b.service, {}).name if services.get(b.service) else b.service }}</td>
+              <td>{{ b.date }}<br><span class="text-muted">{{ b.time_slot }}</span></td>
+              <td><span class="badge badge-{{ b.status or 'pending' }}">{{ (b.status or 'pending')|replace('_', ' ') }}</span></td>
+              <td><span class="badge badge-{{ b.payment_status or 'unpaid' }}">{{ (b.payment_status or 'unpaid')|replace('_', ' ') }}</span></td>
+              <td>
+                <div class="action-btns">
+                  <form method="POST" action="{{ url_for('admin_action') }}">
+                    <input type="hidden" name="booking_id" value="{{ b.id }}">
+                    <input type="hidden" name="action" value="mark_paid">
+                    <button type="submit" class="btn btn-xs btn-primary">Mark Paid</button>
+                  </form>
+                  <form method="POST" action="{{ url_for('admin_action') }}">
+                    <input type="hidden" name="booking_id" value="{{ b.id }}">
+                    <input type="hidden" name="action" value="reschedule">
+                    <button type="submit" class="btn btn-xs btn-secondary">Reschedule</button>
+                  </form>
+                  <form method="POST" action="{{ url_for('admin_action') }}">
+                    <input type="hidden" name="booking_id" value="{{ b.id }}">
+                    <input type="hidden" name="action" value="archive">
+                    <button type="submit" class="btn btn-xs btn-secondary">Archive</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                No bookings yet. When customers book, they will appear here.
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}My Account{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width: 480px;">
+    <div class="card fade-in" style="padding: 40px;">
+      <h1 style="font-size: 1.5rem;">My Account</h1>
+      <p class="text-muted mt-1">Manage your PCfix profile.</p>
+
+      <div class="hero-stat mt-3">
+        <span>Username</span>
+        <span>{{ session.username }}</span>
+      </div>
+      <div class="hero-stat">
+        <span>Email</span>
+        <span>{{ session.email }}</span>
+      </div>
+
+      <hr style="border: none; border-top: 1px solid var(--border); margin: 28px 0;">
+
+      <h3 style="font-size: 1rem; margin-bottom: 12px;">Danger zone</h3>
+      <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 16px;">
+        Permanently delete your account and associated data. This cannot be undone.
+      </p>
+      <form method="POST" action="{{ url_for('account') }}"
+            onsubmit="return confirm('Are you sure you want to permanently delete your account?');">
+        <input type="hidden" name="action" value="delete">
+        <button type="submit" class="btn btn-secondary" style="color: var(--error); border-color: #FECACA;">
+          Delete my account
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

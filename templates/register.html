@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card fade-in">
+    <h1>Create account</h1>
+    <p class="lead">Register with a username and email. Future logins use a code sent to your inbox.</p>
+    <form method="POST" action="{{ url_for('register') }}" novalidate>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" class="form-control" required
+               placeholder="yourusername" minlength="3" pattern="[a-zA-Z0-9_]{3,30}"
+               autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" class="form-control" required
+               placeholder="you@example.com" autocomplete="email">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+    </form>
+    <p class="text-muted text-center mt-3" style="font-size: 0.9rem;">
+      Already registered? <a href="{{ url_for('login') }}">Sign in</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

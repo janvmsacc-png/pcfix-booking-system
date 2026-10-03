@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Pricing{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h1>Transparent Pricing</h1>
+      <p class="lead">Starting prices based on typical Metro Manila rates (2025–2026). Final cost depends on parts and complexity — always confirmed before work begins. Free initial diagnosis.</p>
+    </div>
+
+    <div class="card-grid">
+      {% for key, s in services.items() %}
+      <div class="card fade-in" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+        <div class="card-icon">{{ s.name[0] }}</div>
+        <h3>{{ s.name }}</h3>
+        <div class="card-price">₱{{ "{:,}".format(s.price) }} <span>starting</span></div>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Typical duration: {{ s.duration }}</p>
+        <ul class="feature-list">
+          {% for f in s.features %}
+          <li>{{ f }}</li>
+          {% endfor %}
+        </ul>
+        <a href="{{ url_for('book') }}?service={{ key }}" class="btn btn-primary btn-block">Book Now</a>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="card fade-in mt-4" style="max-width: 640px; margin: 40px auto 0; text-align: center;">
+      <h3>What's included</h3>
+      <p class="text-muted mt-2">
+        All packages include a free initial diagnosis, written estimate before any paid work,
+        and a 30-day workmanship guarantee on labor. Parts are charged separately. Prices reflect typical Metro Manila market rates for 2025–2026.
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

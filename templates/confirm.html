@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Confirmation & Downpayment{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width: 560px;">
+    <div class="section-header fade-in" style="text-align: left; margin-bottom: 32px;">
+      <h1>Complete your booking</h1>
+      <p class="lead" style="margin: 8px 0 0;">Add machine details and choose a downpayment method.</p>
+    </div>
+
+    <div class="card fade-in mb-3">
+      <h4>Booking summary</h4>
+      <div class="hero-stat" style="margin-top: 12px;">
+        <span>Service</span>
+        <span>{{ service.name if service else booking.service }}</span>
+      </div>
+      <div class="hero-stat">
+        <span>Date</span>
+        <span>{{ booking.date }}</span>
+      </div>
+      <div class="hero-stat">
+        <span>Time</span>
+        <span>{{ booking.time_slot }}</span>
+      </div>
+      <div class="hero-stat">
+        <span>Name</span>
+        <span>{{ booking.name }}</span>
+      </div>
+    </div>
+
+    <div class="booking-panel fade-in" style="padding: 32px;">
+      <form method="POST" action="{{ url_for('confirm', booking_id=booking_id) }}" novalidate>
+        <h3 class="mb-3">Machine details</h3>
+        <div class="form-group">
+          <label for="brand">Brand / Model</label>
+          <input type="text" id="brand" name="brand" class="form-control" required placeholder="e.g. Dell XPS 15, MacBook Pro 14">
+        </div>
+        <div class="form-group">
+          <label for="os">Operating system</label>
+          <select id="os" name="os" class="form-control" required>
+            <option value="">Select…</option>
+            <option value="Windows 11">Windows 11</option>
+            <option value="Windows 10">Windows 10</option>
+            <option value="macOS">macOS</option>
+            <option value="Linux">Linux</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="issue">Describe the issue</label>
+          <textarea id="issue" name="issue" class="form-control" required placeholder="What problems are you experiencing?" minlength="10"></textarea>
+        </div>
+
+        <h3 class="mb-3 mt-4">Downpayment</h3>
+        <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 16px;">
+          A small deposit secures your slot. Remaining balance is due after service.
+        </p>
+
+        <div class="payment-options">
+          <label class="payment-opt active">
+            <input type="radio" name="payment_method" value="gcash" checked>
+            <div class="opt-name">GCash</div>
+          </label>
+          <label class="payment-opt">
+            <input type="radio" name="payment_method" value="maya">
+            <div class="opt-name">Maya</div>
+          </label>
+          <label class="payment-opt">
+            <input type="radio" name="payment_method" value="paypal">
+            <div class="opt-name">PayPal</div>
+          </label>
+          <label class="payment-opt">
+            <input type="radio" name="payment_method" value="card">
+            <div class="opt-name">Card</div>
+          </label>
+        </div>
+
+        <div class="qr-placeholder" id="qrBox">
+          Simulated QR / payment placeholder<br>
+          <span style="font-size: 0.75rem; margin-top: 8px; display: block;">Connect real GCash / PayMaya / Stripe in production</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Submit Details &amp; Confirm Payment</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll(".payment-opt").forEach((opt) => {
+  opt.addEventListener("click", () => {
+    document.querySelectorAll(".payment-opt").forEach((o) => o.classList.remove("active"));
+    opt.classList.add("active");
+    opt.querySelector("input").checked = true;
+  });
+});
+</script>
+{% endblock %}

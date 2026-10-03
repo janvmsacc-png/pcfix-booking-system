@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block title %}Book a Repair{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h1>Book a Repair</h1>
+      <p class="lead">Select a service, choose a time, and we'll take it from there.</p>
+    </div>
+
+    <div class="booking-panel fade-in">
+      <div class="steps" id="steps">
+        <div class="step active" data-step="1"></div>
+        <div class="step" data-step="2"></div>
+        <div class="step" data-step="3"></div>
+      </div>
+
+      <form method="POST" action="{{ url_for('book') }}" id="bookingForm" novalidate>
+        <!-- Step 1: Service -->
+        <div class="form-step" id="step1">
+          <h3 class="mb-3">Choose a service</h3>
+          <div class="select-grid">
+            {% for key, s in services.items() %}
+            <label class="select-option {% if request.args.get('service') == key %}active{% endif %}">
+              <input type="radio" name="service" value="{{ key }}"
+                     {% if request.args.get('service') == key %}checked{% endif %} required>
+              <div class="opt-name">{{ s.name }}</div>
+              <div class="opt-price">from ₱{{ "{:,}".format(s.price) }}</div>
+            </label>
+            {% endfor %}
+          </div>
+          <button type="button" class="btn btn-primary btn-block mt-3" id="toStep2">Continue</button>
+        </div>
+
+        <!-- Step 2: Date & Time -->
+        <div class="form-step hidden" id="step2">
+          <h3 class="mb-3">Pick a date &amp; time</h3>
+          <div class="form-group">
+            <label for="date">Preferred date</label>
+            <input type="text" id="date" name="date" class="form-control" placeholder="Select a date" required readonly>
+          </div>
+          <div class="form-group">
+            <label>Available time slots</label>
+            <div class="select-grid" id="slotGrid">
+              {% for slot in time_slots %}
+              <label class="select-option">
+                <input type="radio" name="time_slot" value="{{ slot }}" required>
+                <div class="opt-name">{{ slot }}</div>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px;">
+            <button type="button" class="btn btn-secondary" id="backTo1">Back</button>
+            <button type="button" class="btn btn-primary" style="flex:1" id="toStep3">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Contact -->
+        <div class="form-step hidden" id="step3">
+          <h3 class="mb-3">Your details</h3>
+          <div class="form-group">
+            <label for="name">Full name</label>
+            <input type="text" id="name" name="name" class="form-control" required placeholder="Jane Doe" minlength="2"
+                   value="{{ session.get('username', '') }}">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Phone</label>
+              <input type="tel" id="phone" name="phone" class="form-control" required placeholder="+63 917 000 0000">
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" class="form-control" required placeholder="you@example.com"
+                     value="{{ session.get('email', '') }}">
+            </div>
+          </div>
+          <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 20px;">
+            After booking you'll receive an email with a link to add machine details and complete the downpayment.
+          </p>
+          <div style="display: flex; gap: 12px;">
+            <button type="button" class="btn btn-secondary" id="backTo2">Back</button>
+            <button type="submit" class="btn btn-primary" style="flex:1">Confirm Booking</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Service selection highlight
+  document.querySelectorAll(".select-option").forEach((opt) => {
+    opt.addEventListener("click", () => {
+      const parent = opt.closest(".select-grid");
+      if (parent) {
+        parent.querySelectorAll(".select-option").forEach((o) => o.classList.remove("active"));
+      }
+      opt.classList.add("active");
+      const input = opt.querySelector("input");
+      if (input) input.checked = true;
+    });
+  });
+
+  // Flatpickr – only future weekdays + Saturday
+  flatpickr("#date", {
+    minDate: "today",
+    dateFormat: "Y-m-d",
+    disable: [
+      function (date) {
+        // Disable Sundays (0)
+        return date.getDay() === 0;
+      }
+    ],
+  });
+
+  // Step navigation
+  const steps = [1, 2, 3];
+  let current = 1;
+
+  function showStep(n) {
+    steps.forEach((s) => {
+      const el = document.getElementById("step" + s);
+      if (el) el.classList.toggle("hidden", s !== n);
+    });
+    document.querySelectorAll("#steps .step").forEach((bar) => {
+      const sn = parseInt(bar.dataset.step);
+      bar.classList.toggle("active", sn === n);
+      bar.classList.toggle("done", sn < n);
+    });
+    current = n;
+  }
+
+  document.getElementById("toStep2")?.addEventListener("click", () => {
+    const selected = document.querySelector('input[name="service"]:checked');
+    if (!selected) {
+      alert("Please select a service.");
+      return;
+    }
+    showStep(2);
+  });
+
+  document.getElementById("toStep3")?.addEventListener("click", () => {
+    const date = document.getElementById("date").value;
+    const slot = document.querySelector('input[name="time_slot"]:checked');
+    if (!date) {
+      alert("Please select a date.");
+      return;
+    }
+    if (!slot) {
+      alert("Please select a time slot.");
+      return;
+    }
+    showStep(3);
+  });
+
+  document.getElementById("backTo1")?.addEventListener("click", () => showStep(1));
+  document.getElementById("backTo2")?.addEventListener("click", () => showStep(2));
+
+  // Pre-select if service in query
+  const pre = document.querySelector('input[name="service"]:checked');
+  if (pre) {
+    pre.closest(".select-option")?.classList.add("active");
+  }
+});
+</script>
+{% endblock %}
