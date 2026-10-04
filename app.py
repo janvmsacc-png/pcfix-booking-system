@@ -11,7 +11,6 @@ from flask import (
 from dotenv import load_dotenv
 from supabase import create_client, Client
 import resend
-from resend.exceptions import ResendError
 import jwt
 
 load_dotenv()
@@ -31,18 +30,15 @@ if SUPABASE_URL and SUPABASE_KEY:
     except Exception as e:
         print(f"Supabase init error: {e}")
 
-# Resend Settings
+# Resend
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")
 FROM_EMAIL = os.getenv("FROM_EMAIL", "onboarding@resend.dev")
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@example.com")
 APP_URL = os.getenv("APP_URL", "http://localhost:5000")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
 
-# Initialize Resend Key Globally
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
-else:
-    print("⚠️ WARNING: RESEND_API_KEY missing from environment variables. Running in local development print mode.")
 
 # Services data
 SERVICES = {
@@ -79,33 +75,20 @@ def generate_otp(length=6):
 
 
 def send_email(to: str, subject: str, html: str) -> bool:
-    """
-    Sends transactional template emails via Resend API.
-    Falls back to terminal text representation if no API key is set.
-    """
     if not RESEND_API_KEY:
         print(f"[DEV EMAIL] To: {to} | Subject: {subject}")
         print(html[:500])
         return True
     try:
-        # Construct explicit dictionary conforming to Resend execution schema
-        email_payload = {
+        resend.Emails.send({
             "from": FROM_EMAIL,
             "to": [to],
             "subject": subject,
             "html": html,
-        }
-        
-        # Fire over the network
-        response = resend.Emails.send(email_payload)
-        print(f"✅ Email delivered cleanly via Resend! ID: {response.get('id')}")
+        })
         return True
-        
-    except ResendError as re:
-        print(f"❌ Resend Specific Engine Exception: {re}")
-        return False
     except Exception as e:
-        print(f"❌ Email transmission pipeline error: {e}")
+        print(f"Email error: {e}")
         return False
 
 
@@ -127,8 +110,6 @@ def admin_required(f):
             return redirect(url_for("admin_login"))
         return f(*args, **kwargs)
     return decorated
-
-
 
 # ---------- Public Routes ----------
 
