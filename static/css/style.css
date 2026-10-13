@@ -1,6 +1,38 @@
 /* ============================================================
    PCfix – Ultra-minimalist Design System
    ============================================================ */
+/* 1. Define theme variables */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --toggle-bg: #ccc;
+}
+
+[data-theme="dark"] {
+  --bg-color: #121212;
+  --text-color: #f5f5f5;
+  --toggle-bg: #4f46e5;
+}
+
+/* 2. Apply variables to your existing elements */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+  font-family: sans-serif;
+}
+
+/* 3. Style for the toggle button */
+.theme-toggle-btn {
+  background-color: var(--toggle-bg);
+  color: var(--bg-color);
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 20px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
 
 :root {
   --bg: #FFFFFF;
